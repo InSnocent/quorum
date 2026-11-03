@@ -1,3 +1,4 @@
+// Modified by InSnocent for Windows verification, 2026-11-03. GPL-3.0-or-later.
 import { defineConfig } from 'vite-plus'
 
 const ignored = [
@@ -15,6 +16,8 @@ const ignored = [
 export default defineConfig({
   fmt: {
     ignorePatterns: [...ignored, '**/*.d.ts'],
+    // Windows checkouts use CRLF; Git keeps the shared source as LF.
+    endOfLine: process.platform === 'win32' ? 'crlf' : 'lf',
     semi: false,
     singleQuote: true,
     trailingComma: 'all',

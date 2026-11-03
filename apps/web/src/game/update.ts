@@ -1,3 +1,4 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
 import { Option, Result, Schema } from 'effect'
 import type { Runtime, Update } from 'foldkit'
 import { UrlRequest } from 'foldkit/navigation'
@@ -252,6 +253,7 @@ export const initialModel = (): Model =>
     cue: null,
     muted: false,
     motion: 'system',
+    locale: 'zh-CN',
     glossaryFocus: null,
     glossaryQuery: '',
     inbox: [],
@@ -301,6 +303,7 @@ const sync = (model: Model): AnyCommand =>
     region: model.region,
     paused: model.paused,
     cue: cueNode(model),
+    locale: model.locale,
   })
 
 /** The Company save: the Game, and what this Company has shown so far. */
@@ -612,6 +615,7 @@ const prefsOf = (model: Model): Prefs => ({
   seenTradeoffs: model.seenTradeoffs,
   muted: model.muted,
   motion: model.motion,
+  locale: model.locale,
 })
 
 /** Saves and applies a settings change. */
@@ -619,7 +623,8 @@ const settled = (next: Model): Result => ({
   model: next,
   commands: [
     WritePrefs({ prefs: prefsOf(next) }),
-    ApplySettings({ muted: next.muted, motion: next.motion }),
+    ApplySettings({ muted: next.muted, motion: next.motion, locale: next.locale }),
+    sync(next),
   ],
 })
 
@@ -1038,6 +1043,7 @@ const ARROWS: Record<string, Direction> = {
 const startCompany = (model: Model, game: Game, panel: Model['panel']): Result => {
   const fresh: Model = {
     ...initialModel(),
+    ...prefsOf(model),
     founder: model.founder,
     histograms: model.histograms,
     today: model.today,
@@ -1076,6 +1082,7 @@ const startCompany = (model: Model, game: Game, panel: Model['panel']): Result =
 const enterSandbox = (model: Model, game: Game, run: SandboxRun): Result => {
   const next: Model = {
     ...initialModel(),
+    ...prefsOf(model),
     founder: model.founder,
     histograms: model.histograms,
     today: model.today,
@@ -1221,6 +1228,7 @@ const enterChallenge = (model: Model, id: string): Result => {
   const game = boardOf(challenge)
   const next: Model = {
     ...initialModel(),
+    ...prefsOf(model),
     founder: model.founder,
     histograms: model.histograms,
     today: model.today,
@@ -1542,8 +1550,12 @@ const handle = (model: Model, message: Message): Result =>
             seenTradeoffs: prefs.seenTradeoffs,
             muted: prefs.muted,
             motion: prefs.motion,
+            locale: prefs.locale,
           },
-          commands: [ApplySettings({ muted: prefs.muted, motion: prefs.motion })],
+          commands: [
+            ApplySettings({ muted: prefs.muted, motion: prefs.motion, locale: prefs.locale }),
+            sync({ ...model, locale: prefs.locale }),
+          ],
         }),
       }),
 
@@ -2461,7 +2473,7 @@ const handle = (model: Model, message: Message): Result =>
         commands: [CopyText({ text: encodePlaybook(playbook), done: `Copied ${playbook.name}.` })],
       }
     },
-    PlaybookImportAsked: () => ({ model, commands: [AskPlaybook({})] }),
+    PlaybookImportAsked: () => ({ model, commands: [AskPlaybook({ locale: model.locale })] }),
     PlaybookImported: ({ text }) =>
       text === null
         ? { model }
@@ -2484,6 +2496,7 @@ const handle = (model: Model, message: Message): Result =>
     MuteToggled: () => settled({ ...model, muted: !model.muted }),
     MotionToggled: () =>
       settled({ ...model, motion: model.motion === 'reduce' ? 'system' : 'reduce' }),
+    LocaleChosen: ({ locale }) => settled({ ...model, locale }),
     GlossaryOpened: ({ id }) => {
       const founder = id ? discoverTerm(model.founder, id) : model.founder
       const next: Model = {

@@ -1,3 +1,4 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
 import * as Effect from 'effect/Effect'
 import { Schema } from 'effect'
 import { Command } from 'foldkit'
@@ -8,11 +9,14 @@ import { regionView } from '@quorum/simulation/regions'
 import { ComponentId, Game, Region } from '@quorum/simulation/state'
 import { Message } from './message.ts'
 import { Founder } from '@quorum/simulation/founder'
-import { Motion, Prefs, Reveal, SandboxStore } from './model.ts'
+import { Locale, Motion, Prefs, Reveal, SandboxStore } from './model.ts'
 import { play, setMuted, SOUND_NAMES } from './sound.ts'
 import { appendLog, clearLog, downloadLog, LogEntry } from './playlog.ts'
 import { ChallengeSubmission } from '@quorum/rpc'
 import { ApiRpc } from '@/platform/rpc.ts'
+import { translate } from '../i18n/index.ts'
+import { localizeIllustration } from '../i18n/illustration.ts'
+import { applyMetadata } from '../i18n/metadata.ts'
 
 /* ==========================================================================
    Commands: every side effect Quorum has. The board, localStorage, the
@@ -49,6 +53,7 @@ export const SyncBoard = Command.define('SyncBoard', {
     paused: Schema.Boolean,
     /** The Node whose footer button glows: a disclosure cue. */
     cue: Schema.NullOr(Schema.String),
+    locale: Locale,
   },
   messages: [Message.Synced],
   execute: ({
@@ -62,6 +67,7 @@ export const SyncBoard = Command.define('SyncBoard', {
     region,
     paused,
     cue,
+    locale,
   }) =>
     Effect.sync(() =>
       setBoard('board', {
@@ -75,6 +81,7 @@ export const SyncBoard = Command.define('SyncBoard', {
         region,
         paused,
         cue,
+        locale,
       }),
     ).pipe(Effect.as(Message.Synced())),
 })
@@ -192,11 +199,16 @@ export const WritePrefs = Command.define('WritePrefs', {
 
 /** Applies the settings: mute for every sound, and reduced motion as `data-motion` on the root. */
 export const ApplySettings = Command.define('ApplySettings', {
-  args: { muted: Schema.Boolean, motion: Motion },
+  args: { muted: Schema.Boolean, motion: Motion, locale: Locale },
   messages: [Message.Synced],
-  execute: ({ muted, motion }) =>
+  execute: ({ muted, motion, locale }) =>
     Effect.sync(() => {
       setMuted(muted)
+      document.documentElement.lang = locale
+      applyMetadata(locale)
+      for (const element of document.querySelectorAll('[data-title-art]')) {
+        localizeIllustration(element, locale)
+      }
       if (motion === 'reduce') document.documentElement.dataset.motion = 'reduce'
       else delete document.documentElement.dataset.motion
       return Message.Synced()
@@ -332,11 +344,13 @@ export const CopyText = Command.define('CopyText', {
 
 /** Asks for a Playbook string. */
 export const AskPlaybook = Command.define('AskPlaybook', {
-  args: {},
+  args: { locale: Locale },
   messages: [Message.PlaybookImported],
-  execute: () =>
+  execute: ({ locale }) =>
     Effect.sync(() =>
-      Message.PlaybookImported({ text: window.prompt('Paste a Playbook (QPB1:…)') }),
+      Message.PlaybookImported({
+        text: window.prompt(translate('Paste a Playbook (QPB1:…)', locale)),
+      }),
     ),
 })
 

@@ -1,3 +1,4 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
 import { Schema } from 'effect'
 import { defineMessageUnion } from 'foldkit/message'
 import { UrlRequest } from 'foldkit/navigation'
@@ -30,7 +31,16 @@ import {
 } from '@quorum/simulation/state'
 import { ChallengeVerdict } from '@quorum/rpc'
 import { histogramQuery } from './challenge-query.ts'
-import { BuildGroupKey, Folder, Menu, Panel, SandboxId, Tone, TradeoffOption } from './model.ts'
+import {
+  BuildGroupKey,
+  Folder,
+  Locale,
+  Menu,
+  Panel,
+  SandboxId,
+  Tone,
+  TradeoffOption,
+} from './model.ts'
 
 /* ==========================================================================
    Every gesture in Quorum becomes one of these.
@@ -234,6 +244,7 @@ export const Message = defineMessageUnion({
   /** Settings and the Glossary (15). */
   MuteToggled: {},
   MotionToggled: {},
+  LocaleChosen: { locale: Locale },
   GlossaryOpened: { id: Schema.NullOr(Schema.String) },
   GlossarySearched: { query: Schema.String },
   MailOpened: { id: Schema.Finite },

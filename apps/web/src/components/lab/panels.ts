@@ -1,3 +1,5 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
+import { languagePicker, licenseNotice, sourceLink } from '../../i18n/controls.ts'
 import type { Html, HtmlBuilder } from 'foldkit/html'
 import { Download, Trash2, X } from 'lucide'
 import { offer } from '@quorum/simulation/actions'
@@ -208,6 +210,15 @@ export const settingsPanel = (model: Model, h: HtmlBuilder<Message>): Html =>
       h.div(
         [h.Class('flex flex-col gap-4 px-5 pt-1 pb-5')],
         [
+          h.div(
+            [h.Class('flex flex-col items-start gap-2')],
+            [
+              h.span([h.Class('text-[13px] font-medium')], ['Language']),
+              languagePicker(model.locale, h),
+              sourceLink(h),
+              licenseNotice(h),
+            ],
+          ),
           switch_(
             {
               id: 'setting-muted',

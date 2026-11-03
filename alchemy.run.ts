@@ -1,3 +1,4 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
 import * as Alchemy from 'alchemy'
 import * as Cloudflare from '@alchemy.run/cloudflare'
 import * as Effect from 'effect/Effect'
@@ -7,7 +8,7 @@ import { API_PREFIX } from '@quorum/rpc'
 const compatibility = { date: '2026-10-08' }
 
 /** The public hostname of the `prod` stage. Its zone must exist in the Cloudflare account. */
-const PRODUCTION_DOMAIN = 'quorum.elianiva.com'
+const PRODUCTION_DOMAIN = process.env.PRODUCTION_DOMAIN
 
 /**
  * Cloudflare Workers Observability, configured on the host resources only.
@@ -48,7 +49,7 @@ export default Alchemy.Stack(
       main: 'src/worker.ts',
       env: { API: ApiWorker },
       assets: { runWorkerFirst: [`${API_PREFIX}/*`] },
-      ...(stage === 'prod' && { domain: PRODUCTION_DOMAIN }),
+      ...(stage === 'prod' && PRODUCTION_DOMAIN ? { domain: PRODUCTION_DOMAIN } : {}),
       compatibility,
       observability,
     })

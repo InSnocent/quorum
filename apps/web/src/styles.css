@@ -1,3 +1,4 @@
+/* Modified by InSnocent for Chinese font support, 2026-11-03. GPL-3.0-or-later. */
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
@@ -24,9 +25,12 @@
 :root {
   --radius: 10px;
 
-  --sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --sans:
+    'Geist', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC', ui-sans-serif, system-ui,
+    sans-serif;
   --heading: var(--sans);
-  --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --mono:
+    'Geist Mono', 'Microsoft YaHei', 'PingFang SC', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --background: oklch(0.981 0.0012 260);
   --foreground: oklch(0.26 0.01 260);

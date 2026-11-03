@@ -9,3 +9,5 @@ coverage/
 !.env.example
 .amp/portals/
 .DS_Store
+.tools/
+.localization/

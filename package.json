@@ -15,7 +15,11 @@
     "typecheck": "tsrs --noEmit -p tsconfig.json && effect-tsrs diagnostics --strict --project tsconfig.json && turbo run typecheck",
     "test": "turbo run test",
     "test:golden": "pnpm --filter @quorum/simulation test:golden",
-    "deploy": "alchemy deploy --stage prod"
+    "deploy": "alchemy deploy --stage prod",
+    "i18n:extract": "node scripts/localization/extract.mjs",
+    "i18n:translate": "node scripts/localization/translate.mjs",
+    "i18n:compile": "node scripts/localization/compile.mjs --strict && vp fmt apps/web/src/i18n/zh-CN.ts",
+    "i18n:verify": "node --test scripts/localization/protocol.test.mjs && node scripts/localization/extract.mjs && node scripts/localization/verify.mjs"
   },
   "devDependencies": {
     "@alchemy.run/cloudflare": "2.0.0-beta.84",

@@ -1,3 +1,4 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
 import { Effect, Schema } from 'effect'
 import { BUILD_GROUPS, type BuildGroup } from '@quorum/simulation/catalog'
 import { Progress, SANDBOX_IDS } from '@quorum/simulation/sandbox'
@@ -10,6 +11,7 @@ import { Replay } from '@quorum/simulation/replay'
 import { ChallengeVerdict } from '@quorum/rpc'
 import { histogramQuery } from './challenge-query.ts'
 import { AppRoute, MENU_PAGES } from './route.ts'
+import { DEFAULT_LOCALE, LOCALES } from '../i18n/locale.ts'
 import {
   ComponentId,
   FamilyId,
@@ -245,8 +247,11 @@ export type RevealCue = typeof RevealCue.Type
 export const Motion = Schema.Literals(['system', 'reduce'])
 export type Motion = typeof Motion.Type
 
+export const Locale = Schema.Literals(LOCALES)
+
 /** What the player's browser remembers apart from saves: settings, and the option sets confirmed once. */
 export const Prefs = Schema.Struct({
+  locale: Locale.pipe(Schema.withDecodingDefaultKey(Effect.succeed(DEFAULT_LOCALE))),
   seenTradeoffs: Schema.Array(TradeoffKind).pipe(Schema.withDecodingDefaultKey(Effect.succeed([]))),
   muted: Schema.Boolean.pipe(Schema.withDecodingDefaultKey(Effect.succeed(false))),
   motion: Motion.pipe(Schema.withDecodingDefaultKey(Effect.succeed('system' as const))),
@@ -338,6 +343,7 @@ export const Model = Schema.Struct({
   cue: Schema.NullOr(RevealCue),
   muted: Schema.Boolean,
   motion: Motion,
+  locale: Locale,
   /** The Glossary panel's open entry and search. */
   glossaryFocus: Schema.NullOr(Schema.String),
   glossaryQuery: Schema.String,

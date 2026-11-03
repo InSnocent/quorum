@@ -1,5 +1,6 @@
+<!-- Modified for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE. -->
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -11,38 +12,36 @@
         background: #141517;
       }
     </style>
-    <title>Quorum — a systems design game for software engineers</title>
+    <title>Quorum — 面向软件工程师的系统架构游戏</title>
     <meta
       name="description"
-      content="Grow a startup from one server in a garage to a public company. Wire components, pick stacks, and fix one real bottleneck after another in an incremental systems design game."
+      content="从车库里的一台服务器起步，把初创公司发展成上市企业。连接组件、选择技术栈，逐步解决真实瓶颈。"
     />
-    <link rel="canonical" href="https://quorum.elianiva.com/" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Quorum" />
-    <meta property="og:url" content="https://quorum.elianiva.com/" />
-    <meta property="og:title" content="Quorum — a systems design game for software engineers" />
+    <meta property="og:title" content="Quorum — 面向软件工程师的系统架构游戏" />
     <meta
       property="og:description"
-      content="Grow a startup from one server in a garage to a public company, one real bottleneck at a time."
+      content="从车库里的一台服务器起步，把初创公司发展成上市企业，逐步解决真实瓶颈。"
     />
-    <meta property="og:image" content="https://quorum.elianiva.com/og.png" />
+    <meta property="og:image" content="/og.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="The Quorum wordmark wired into an isometric workbench of users, a load balancer, two app servers, a cache, and a database."
+      content="Quorum 标志通过线缆连接等距工作台上的用户、负载均衡器、两台应用服务器、缓存和数据库。"
     />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content="zh_CN" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Quorum — a systems design game for software engineers" />
+    <meta name="twitter:title" content="Quorum — 面向软件工程师的系统架构游戏" />
     <meta
       name="twitter:description"
-      content="Grow a startup from one server in a garage to a public company, one real bottleneck at a time."
+      content="从车库里的一台服务器起步，把初创公司发展成上市企业，逐步解决真实瓶颈。"
     />
-    <meta name="twitter:image" content="https://quorum.elianiva.com/og.png" />
+    <meta name="twitter:image" content="/og.png" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -58,21 +57,22 @@
         "@context": "https://schema.org",
         "@type": "VideoGame",
         "name": "Quorum",
-        "url": "https://quorum.elianiva.com/",
-        "image": "https://quorum.elianiva.com/og.png",
+        "image": "/og.png",
         "description": "An incremental systems design game for software engineers. Grow a startup from one server in a garage to a public company.",
         "genre": ["Incremental", "Simulation", "Educational"],
         "gamePlatform": "Web browser",
         "applicationCategory": "Game",
         "operatingSystem": "Any",
-        "inLanguage": "en",
+        "inLanguage": ["zh-CN", "en"],
+        "codeRepository": "https://github.com/InSnocent/quorum",
+        "license": "https://www.gnu.org/licenses/gpl-3.0.html",
         "isAccessibleForFree": true,
         "author": { "@type": "Person", "name": "elianiva", "url": "https://elianiva.com" }
       }
     </script>
   </head>
   <body>
-    <noscript>Quorum is a browser game and needs JavaScript to run.</noscript>
+    <noscript>Quorum 是一款浏览器游戏，需要启用 JavaScript。</noscript>
     <div id="root"></div>
     <script type="module" src="/src/entry.ts"></script>
   </body>

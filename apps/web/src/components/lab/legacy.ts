@@ -1,4 +1,6 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
 import type { Html, HtmlBuilder } from 'foldkit/html'
+import { verbatimText } from '../../i18n/html.ts'
 import { BookCopy, Clipboard, DoorOpen, Plus, Stamp, Trash2, Upload } from 'lucide'
 import { COMPONENTS, ERAS, EXITS, RESEARCH } from '@quorum/simulation/catalog'
 import { exitOffers } from '@quorum/simulation/exit'
@@ -348,7 +350,7 @@ export const playbooksPanel = (model: Model, h: HtmlBuilder<Message>): Html => {
                 [
                   h.span(
                     [h.Class('min-w-0 flex-1 truncate text-[13px] font-medium')],
-                    [playbook.name],
+                    [verbatimText(playbook.name)],
                   ),
                   h.span(
                     [h.Class(cn(FIGURE, 'text-[11.5px] text-muted-foreground'))],

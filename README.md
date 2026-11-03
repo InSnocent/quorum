@@ -1,183 +1,153 @@
+**简体中文** | [English](README.en.md)
+
+# Quorum 中英双语版
+
+> 本项目 Fork 自 [elianiva/quorum](https://github.com/elianiva/quorum)，原作者为 Dicha Zelianivan Arkana（elianiva）。[InSnocent/quorum](https://github.com/InSnocent/quorum) 于 2026-11-03 加入简体中文 / English 切换，沿用 GPL-3.0-or-later。原 LICENSE、作者归属和第三方许可均予以保留，修改说明见 [MODIFICATIONS.md](MODIFICATIONS.md)。
+
+标题页右上角和游戏设置中均可切换语言，选择会保存在浏览器中。 当前中文译文是可游玩的初稿，已完成插值校验和基础术语检查，完整人工精校将继续进行。精校入口为 `scripts/localization/overrides.json`，维护方法见 [本地化说明](docs/localization.md)。中文版文案由本地 Index-Translate-2B 辅助生成并校对；游戏运行和构建不需要翻译模型。工程设计文档和原始示意截图保留上游版本，便于对照。
+
 <p align="center">
-  <img src="docs/images/hero.png" alt="Quorum: grow a startup one bottleneck at a time" width="100%" />
+  <img src="docs/images/board-zh-CN.jpg" alt="Quorum 中文版架构画布" width="100%" />
 </p>
 
 <p align="center">
-  <b>An incremental systems game for software engineers.</b><br />
-  Play it at <a href="https://quorum.elianiva.com">quorum.elianiva.com</a>.
+  <b>一款面向软件工程师的系统渐进式游戏。</b><br />
+  上游演示：<a href="https://quorum.elianiva.com">quorum.elianiva.com</a>（原版）。
 </p>
 
 ---
 
-You found a startup with one virtual machine in a garage. Users send requests. You wire
-Components on a board, choose the language and runtime each server runs, and fix one bottleneck
-after another, until the company serves billions of people and goes public.
+你在车库里创办一家初创公司，起步只有一台虚拟机。用户发送请求。你将组件连接到板上，为每个服务器选择语言和运行环境，然后依次解决一个又一个瓶颈，直到公司能够服务数十亿用户并上市。
 
-Every mechanic models real behavior. PHP-FPM workers wait on the database. A Node.js event loop
-stalls on bcrypt. A JVM is slow until it warms up. A cache stampedes when it restarts. An average
-hides the p99. If you have been paged at 3 AM, you know the problems. The game asks you to fix
-them with numbers.
+每种机制都模拟了真实行为。PHP-FPM 工作进程等待数据库响应。Node.js 事件循环因 bcrypt 而停滞。JVM 在热身前速度缓慢。缓存重启时会引发惊群。平均性能掩盖了 p99 值。如果你曾在凌晨 3 点被告警叫醒，就会对这些问题很熟悉。你需要依据指标来解决它们。
 
-![A Series A board: CDN and WAF in front of a load balancer, three Go App Servers, and a Database marked as the bottleneck](docs/images/board.png)
+![A Series A 板：CDN 和 WAF 位于负载均衡器前方，三台 Go 应用服务器，以及被标记为瓶颈的数据库](docs/images/board.png)
 
-## How to play
+## 游戏玩法
 
-### Start small
+### 从小处开始
 
-The first Company is one Users node, one App Server, Payments, and Analytics. Requests flow
-along the Links you draw. Served requests earn Cash, which waits in the Payments drawer until you
-collect it. Analytics samples traffic and turns it into Insight, the research currency.
+第一家公司的结构包括一个用户节点、一个应用服务器、支付模块和分析模块。请求通过你绘制的链接流动。成功处理的请求会赚取现金，现金会等待在支付抽屉中，直到你收集它。分析模块会采样流量并将其转化为洞察，即研究货币。
 
-![The Garage Era: Users, one App Server running Apache mod_php, Payments, and Analytics](docs/images/garage.png)
+![车库时代：用户、一台运行 Apache mod_php 的应用服务器、支付模块和分析模块](docs/images/garage.png)
 
-### Find the bottleneck
+### 找到瓶颈
 
-The Simulation is a flow network. At any time, one Node limits the most revenue, and the Board
-marks it. Its card says why: out of CPU, credits, RAM, workers, or connections. Each kind of limit
-needs a different fix, and more hardware fixes only some of them.
+模拟是一个流量网络。在任何时刻，一个节点会限制最大收入，而板面会标记它。卡片上说明原因：CPU、CPU 积分、内存、工作进程或连接资源不足。每种限制需要不同的修复方法，更多硬件修复只能解决其中一部分。
 
-Each fix moves the bottleneck. Faster App Servers send more queries to the Database. A Cache
-removes Database load and adds stale reads. A Read Replica adds read capacity and adds
-replication lag. The bottleneck is the content.
+每次修复都会移动瓶颈。更快的应用服务器会向数据库发送更多查询。缓存可以减轻数据库负载并增加陈旧读取量。只读副本会增加读取容量，也会引入复制延迟。不断迁移的瓶颈，就是游戏的核心内容。
 
-### Choose a Stack, not a tier
+### 选择技术栈，而非层级
 
-No option strictly beats another. Each App Server runs a Stack: a runtime and a framework. Go
-handles many idle connections cheaply, and its garbage collector takes CPU when the heap fills.
-Rust is fast and slow to write. PHP-FPM is slow per request and cannot leak memory between
-requests. The right choice depends on your Design.
+没有任何选项能严格优于其他选项。每个应用服务器运行一个技术栈：运行时与框架。Go 能以低成本处理大量空闲连接，其垃圾收集器在堆满时会占用 CPU。Rust 运行快，但开发耗时较长。PHP-FPM 每次请求的开销较高，但请求间不会累积内存泄漏。正确的选择取决于你的架构设计。
 
 <p align="center">
-  <img src="docs/images/runtime.png" alt="The inspector for an App Server, with the runtime list: mod_php, PHP-FPM, Puma, Node.js, Gunicorn, Go, Tomcat, Kestrel, BEAM, and Tokio" width="640" />
+  <img src="docs/images/runtime.png" alt="应用服务器检查器，包含运行时列表：mod_php、PHP-FPM、Puma、Node.js、Gunicorn、Go、Tomcat、Kestrel、BEAM 和 Tokio" width="640" />
 </p>
 
-### Research, raise, repeat
+### 研究、融资、再循环
 
-Insight buys Research: new Components, runtime variants, techniques, and more visibility. Users
-grow while Apdex stays above the Era target, and they leave when it drops.
+洞察可以购买研究：新的组件、运行时变体、技术以及更多可见性。Apdex 高于当前阶段的目标时，用户会增长；低于目标时，用户会流失。
 
-![The Research tree, with Infrastructure, Data, Reliability, and Observability tracks by Era](docs/images/research.png)
+![研究树，按时代划分基础设施、数据、可靠性与可观测性路径](docs/images/research.png)
 
-At each Milestone, investors offer a Funding round: Cash for Equity. Each Era brings new request
-kinds that break the Design in a new way.
+在每个里程碑阶段，投资者会提供融资轮次：现金换股权。每个时代都会带来新的请求类型，以不同方式打破原有设计。
 
-| Era      | Leave at               | New request kinds         | New failure mode                                 |
-| -------- | ---------------------- | ------------------------- | ------------------------------------------------ |
-| Garage   | 1,000 users            | `page`, `read`            | One box runs out of CPU, then RAM                |
-| Pre-seed | 5,000 users            | `write`, `login`          | Database contention, connections, CPU-heavy work |
-| Seed     | 25,000 users           | `search`, `upload`, `bot` | Unlike workloads, abuse, large payloads          |
-| Series A | 150,000 users          | `media`, `rt`, `buy`      | Zone failures, egress cost, money correctness    |
-| Series B | 1,000,000 users        | `job`, `report`, `ai`     | OLTP against OLAP, GPU economics, team scaling   |
-| Series C | 10,000,000 users       | `feed`, `hook`, `push`    | Fan-out, hot keys, geography, region failures    |
-| Pre-IPO  | 50,000,000 users + IPO | —                         | Compliance, disaster recovery, margin            |
-| Public   | Endless                | —                         | Quarterly guidance                               |
+| 阶段     | 晋级条件                  | 新请求类型                | 新挑战                                |
+| -------- | ------------------------- | ------------------------- | ------------------------------------- |
+| 车库期   | 1,000 用户                | `page`、`read`            | CPU、内存耗尽                         |
+| 种子前期 | 5,000 用户                | `write`、`login`          | 数据库竞争、连接数、CPU 密集任务      |
+| 种子期   | 25,000 用户               | `search`、`upload`、`bot` | 混合负载、滥用、大体积请求            |
+| A 轮     | 150,000 用户              | `media`、`rt`、`buy`      | 可用区故障、出口流量费用、资金正确性  |
+| B 轮     | 1,000,000 用户            | `job`、`report`、`ai`     | OLTP 与 OLAP 竞争、GPU 成本、团队扩张 |
+| C 轮     | 10,000,000 用户           | `feed`、`hook`、`push`    | 扇出、热点键、跨地域与区域故障        |
+| 上市前   | 50,000,000 用户并完成 IPO | —                         | 合规、灾难恢复、利润率                |
+| 已上市   | 无尽模式                  | —                         | 季度业绩指引                          |
 
-### Survive Incidents
+### 应对事件
 
-An incident director tests the weakest part of your Design: a zone outage, a cache stampede, a
-retry storm, a CVE. Each Incident ends in a Postmortem with one action item. Handle an Incident
-type by hand, and you can write a Runbook for it.
+故障调度器会考验架构最薄弱的部分：可用区中断、缓存惊群、重试风暴或 CVE。每次故障结束后都会生成复盘及一个改进项。亲自处理过某类故障后，就能为它编写应急预案。
 
-![The Zone Outage Sandbox while zone A fails: both App Servers and the Database are down, and Apdex is 0](docs/images/zone-outage.png)
+![可用区故障沙盒：可用区 A 故障时，应用服务器和数据库均停止运行，Apdex 为 0](docs/images/zone-outage.png)
 
-### Read your Mail
+### 阅读邮件
 
-Advice, offers, invoices, CVE disclosures, and spam arrive in the Inbox as letters from people and
-systems in the game. Some carry action buttons. Some are traps.
+建议、报价单、发票、CVE 披露和垃圾邮件会作为来自游戏内人物和系统的信件进入收件箱。有些带有行动按钮，有些则是陷阱。
 
 <p align="center">
-  <img src="docs/images/inbox.png" alt="The Inbox with a letter from the mentor, Dr. Leslie Lamportant" width="640" />
+  <img src="docs/images/inbox.png" alt="收件箱中有一封来自导师 Dr. Leslie Lamportant 的信件" width="640" />
 </p>
 
-### Exit and start again
+### 退出并重新开始
 
-A Company ends in an Exit: an acqui-hire, an acquisition, an IPO, or stepping down. Equity times
-Valuation pays Legacy. Legacy buys permanent Perks, and your saved Playbooks carry into the next
-Company. Exits unlock new Ventures, such as Fintech, Streaming media, or an AI startup, and
-Mutators that make a Company harder for more Legacy.
+公司可以通过人才收购、并购、IPO 或创始人退任结束经营。股权比例乘以估值决定传承收益。传承用于购买永久加成，保存的架构方案可以带到下一家公司。退出还会解锁金融科技、流媒体、AI 等创业方向，以及提高难度、增加传承奖励的规则修正项。
 
-### Outside the Company
+### 公司之外
 
-- **Sandbox.** Guided Sandboxes teach one mechanic each from a fixed Design, such as Connection
-  Limit, Stampede, GC Pauses, or Hot Key. The free Sandbox has everything unlocked.
-- **Challenges.** Fixed puzzles scored on cost, tail latency, and complexity. The server re-runs
-  each Replay and places your result on a histogram of every player's best. You see a
-  percentile, never a rank.
+- **沙箱。** 引导式沙箱会教你一个固定设计中的机制，例如连接数限制、缓存惊群、GC 暂停或热点键。自由沙盒中所有功能都已解锁。
+- **挑战。** 固定的谜题，根据成本、尾部延迟和复杂度评分。服务器会重新运行每次重演，并将你的结果放在每位玩家最佳表现的直方图中。你只会看到百分位，不会看到排名。
 
-## Learn more
+## 了解更多
 
-- [Game design document](docs/gdd/README.md) — the full design, from simulation to balancing.
-- [Reality check](docs/gdd/reality-check.md) — the real behavior behind each rule.
-- [Engineering glossary](docs/gdd/glossary.md) — the engineering terms the game teaches.
-- [CONTEXT.md](CONTEXT.md) — the game vocabulary that code and UI copy use.
-- [docs/adr](docs/adr) — the decisions behind the design and the code.
+- [游戏设计文档](docs/gdd/README.md) — 完整的设计，从模拟到平衡。
+- [现实检查](docs/gdd/reality-check.md) — 每条规则背后的真实行为。
+- [工程术语表](docs/gdd/glossary.md) — 游戏所教的工程术语。
+- [CONTEXT.md](CONTEXT.md) — 代码和界面文案使用的游戏词汇。
+- [docs/adr](docs/adr) — 设计和代码背后的决策。
 
-## Develop
+## 开发
 
-Quorum is built on Cafe: **C**loudflare for the runtime, **A**lchemy for infrastructure,
-**F**oldkit for the UI, and **E**ffect for the server and the shared contract.
+Quorum 基于 Cafe 构建：**C**loudflare 用于运行时，**A**lchemy 用于基础设施，**F**oldkit 用于 UI，**E**ffect 用于服务器和共享合约。
 
-| Path                  | Contents                                                                     |
-| --------------------- | ---------------------------------------------------------------------------- |
-| `apps/web`            | The Foldkit game client, the website Worker, and static assets.              |
-| `apps/backend`        | Effect RPC handlers and the API Worker entry.                                |
-| `packages/simulation` | The pure Simulation. The browser plays it; the API Worker replays it.        |
-| `packages/rpc`        | The wire contract: RPC groups, schemas, declared errors, and the API prefix. |
-| `examples/reference`  | A Foldkit Query to RPC example, deployed only to the `reference` stage.      |
+| 路径                  | 内容                                                 |
+| --------------------- | ---------------------------------------------------- |
+| `apps/web`            | Foldkit 游戏客户端、网站工作进程和静态资产。         |
+| `apps/backend`        | Effect RPC 处理程序以及 API 工作进程入口。           |
+| `packages/simulation` | 纯模拟模块。浏览器运行它；API 工作进程重新运行它。   |
+| `packages/rpc`        | 通信合约：RPC 组、schema、声明错误和 API 前缀。      |
+| `examples/reference`  | Foldkit 查询到 RPC 示例，仅部署在 `reference` 阶段。 |
 
-Alchemy composes the website and the API into one deployment. A service binding routes
-same-origin API requests to the backend.
+Alchemy 将网站和 API 组合成一次部署。服务绑定将相同来源的 API 请求路由到后端。
 
-### Get started
+### 开始使用
 
-Requirements: Node.js 24.11 or newer and pnpm 12.
+要求：Node.js 24.11 或更高版本和 pnpm 12。
 
 ```sh
 pnpm install
-pnpm dev            # the default stack
-pnpm dev:reference  # the reference example
+pnpm dev            # 默认栈
+pnpm dev:reference  # 参考示例
 ```
 
-### Verify a change
+### 验证更改
 
 ```sh
-pnpm check      # Vite+ formatting and lint
+pnpm check      # Vite+ 格式检查和代码规范
 pnpm typecheck
 pnpm test
 pnpm build
 ```
 
-Pre-commit runs `pnpm check`. Pre-push runs the typecheck and the tests.
+提交前运行 `pnpm check`，推送前运行类型检查和测试。
 
-### Deploy
+### 部署
 
-CI deploys every push to `main` to the `prod` stage at <https://quorum.elianiva.com>, after the
-checks pass. The job reads `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the
-repository's Actions secrets. Alchemy keeps the stack state in a Cloudflare state-store Worker in
-the same account, so CI needs no other credentials.
+本 Fork 默认关闭 CI 自动部署。需要部署时，在自己的 Cloudflare 账户配置 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`，并将仓库变量 `ENABLE_DEPLOY` 设为 `true`。自定义域名通过 `PRODUCTION_DOMAIN` 配置，CI 环境链接通过 `PRODUCTION_URL` 配置。未配置域名时使用 Cloudflare 分配的地址。
 
-`pnpm deploy` runs the same deployment from your machine. Only the `prod` stage attaches the
-custom domain; other stages use their `workers.dev` URL.
+`pnpm deploy` 会创建或更新 Cloudflare 资源，应由维护者在配置完成后主动执行。此汉化任务没有部署线上服务。上游演示站由原作者维护，仍是上游版本。
 
-The API Worker has no `workers.dev` URL. The website reaches it through its service binding, so
-the RPC endpoint has one public origin. Remove `workersDev: false` in `alchemy.run.ts` when the
-API needs its own URL or custom domain.
+### 艺术
 
-### Art
+社交卡 `apps/web/public/og.png` 是 `apps/web/art/og.html` 的截图，而 README 主图 `docs/images/hero.png` 是 `apps/web/art/hero.html` 的截图。每个文件都说明如何重新渲染它。`docs/images` 中的其他图片是运行游戏的截图。
 
-The social card `apps/web/public/og.png` is a screenshot of `apps/web/art/og.html`, and the README
-hero `docs/images/hero.png` is a screenshot of `apps/web/art/hero.html`. Each file says how to
-render it again. The other images in `docs/images` are screenshots of the running game.
+### 设计说明
 
-### Design notes
+- [架构](docs/architecture.md) — 应用和 RPC 边界。
+- [工具链](docs/tooling.md) — Vite+、Turbo 和 Oxfmt/Oxlint 的职责。
+- [防护规则](docs/guardrails.md) — 强制执行的规则和检查。
+- [添加功能](docs/extending.md) — 从合约到处理程序再到 UI 的路径。
+- 参考示例故意与游戏分开。可以从中复制模式，但不要将它的演示行为移入默认应用中。
 
-- [Architecture](docs/architecture.md) — app and RPC boundaries.
-- [Tooling](docs/tooling.md) — Vite+, Turbo, and Oxfmt/Oxlint responsibilities.
-- [Guardrails](docs/guardrails.md) — the rules and the checks that enforce them.
-- [Adding a feature](docs/extending.md) — the path from contract to handler to UI.
-- The reference example is intentionally separate from the game. Copy patterns from it; do not
-  move its demo behavior into the default app.
+## 许可证
 
-## License
-
-Quorum is licensed under the [GNU General Public License v3.0 or later](LICENSE).
+Quorum 采用 [GNU 通用公共许可证 v3.0 或更高版本](LICENSE) 许可。

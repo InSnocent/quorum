@@ -1,3 +1,4 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
 import type { Html, HtmlBuilder } from 'foldkit/html'
 import { Check, Search } from 'lucide'
 import { GLOSSARY, type GlossaryEntry } from '@quorum/simulation/catalog'
@@ -7,18 +8,21 @@ import { icon } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 import { EYEBROW, SCROLL, WELL } from './bits.ts'
 import { shell } from './panels.ts'
+import { translate, type Locale } from '../../i18n/index.ts'
 
 /* ==========================================================================
    The Glossary (15, glossary.md): every engineering term the game uses.
    Terms the player has met in play carry a check; the rest stay readable.
    ========================================================================== */
 
-const matches = (entry: GlossaryEntry, query: string): boolean => {
+export const matches = (entry: GlossaryEntry, query: string, locale: Locale): boolean => {
   const text = query.trim().toLowerCase()
   return (
     text === '' ||
     entry.term.toLowerCase().includes(text) ||
-    entry.definition.toLowerCase().includes(text)
+    entry.definition.toLowerCase().includes(text) ||
+    translate(entry.term, locale).toLowerCase().includes(text) ||
+    translate(entry.definition, locale).toLowerCase().includes(text)
   )
 }
 
@@ -69,7 +73,7 @@ const detail = (entry: GlossaryEntry, h: HtmlBuilder<Message>): Html =>
   )
 
 export const glossaryPanel = (model: Model, h: HtmlBuilder<Message>): Html => {
-  const shown = GLOSSARY.filter((entry) => matches(entry, model.glossaryQuery))
+  const shown = GLOSSARY.filter((entry) => matches(entry, model.glossaryQuery, model.locale))
   const open = GLOSSARY.find((entry) => entry.id === model.glossaryFocus) ?? shown[0] ?? GLOSSARY[0]
   const met = (entry: GlossaryEntry) => model.founder.glossary.includes(entry.id)
   return shell(

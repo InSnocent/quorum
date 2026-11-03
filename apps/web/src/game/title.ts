@@ -1,3 +1,4 @@
+// Modified by InSnocent for the bilingual fork, 2026-11-03. GPL-3.0-or-later; see LICENSE.
 import * as Effect from 'effect/Effect'
 import { Mount } from 'foldkit'
 import type { Html, HtmlBuilder } from 'foldkit/html'
@@ -25,6 +26,7 @@ import { Message } from './message.ts'
 import type { Model } from './model.ts'
 import { menuOf } from './route.ts'
 import { play } from './sound.ts'
+import { localizeIllustration } from '../i18n/illustration.ts'
 
 /* ==========================================================================
    The title screen: the night shift. One 16:10 stage, 1600 x 1000 units,
@@ -79,6 +81,7 @@ const BenchMounted = Mount.define('BenchMounted', {
       Effect.orElseSucceed(() => ''),
       Effect.map((svg) => {
         element.innerHTML = svg
+        localizeIllustration(element, document.documentElement.lang === 'en' ? 'en' : 'zh-CN')
         for (const clockRoot of element.closest('.title-stage')?.querySelectorAll('svg') ?? [])
           if (clockRoot instanceof SVGSVGElement) clockRoot.setCurrentTime(0)
         return Message.Synced()
@@ -883,6 +886,7 @@ export const titleScreen = (model: Model, h: HtmlBuilder<Message>): Html =>
                   ),
                   h.div([
                     h.Key('bench'),
+                    h.DataAttribute('title-art', 'true'),
                     h.Class('title-bench absolute'),
                     h.Style({ left: x(BENCH.left), top: y(BENCH.top), width: x(BENCH.width) }),
                     h.OnMount(BenchMounted()),
